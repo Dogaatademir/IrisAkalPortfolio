@@ -7,7 +7,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+    
     <style>
+        /* --- GENEL STİLLER --- */
         * {
             margin: 0;
             padding: 0;
@@ -22,6 +24,7 @@
             letter-spacing: 0.3px;
         }
 
+        /* --- HEADER & NAV --- */
         header {
             background: white;
             padding: 2rem 4rem;
@@ -77,6 +80,7 @@
             padding: 6rem 4rem;
         }
 
+        /* --- HAKKIMDA --- */
         #hakkimda {
             margin-top: 100px;
             display: grid;
@@ -134,6 +138,7 @@
             line-height: 2;
         }
 
+        /* --- PORTFOLIO --- */
         #portfolio {
             background: transparent;
             padding: 8rem 4rem;
@@ -165,6 +170,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            margin: 0 auto;
         }
 
         .loading-message {
@@ -226,7 +232,7 @@
 
         .page-navigation {
             position: absolute;
-            bottom: +5rem;
+            bottom: +15rem;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -266,7 +272,7 @@
         }
 
         .book-controls {
-            margin-top: -5rem;
+            margin-top: -14rem; /* Navigasyon butonları ile çakışmaması için artırıldı */
             display: flex;
             justify-content: center;
             gap: 2rem;
@@ -290,6 +296,7 @@
             color: white;
         }
 
+        /* --- İLETİŞİM --- */
         #iletisim {
             padding: 8rem 4rem;
         }
@@ -382,12 +389,6 @@
             border-color: #2a2a2a;
         }
 
-        .contact-form input::placeholder,
-        .contact-form textarea::placeholder {
-            color: #bbb;
-            letter-spacing: 0.5px;
-        }
-
         .contact-form textarea {
             resize: vertical;
             min-height: 180px;
@@ -441,7 +442,7 @@
     </header>
 
     <section id="hakkimda">
-        <div class="profile-image">
+          <div class="profile-image">
             <!-- Profil fotoğrafınızı eklemek için aşağıdaki yorumu kaldırın -->
             <img src="profil.jpg" alt="Profil Fotoğrafı"> 
         </div>
@@ -522,6 +523,7 @@
         let pdfDoc = null;
         let currentPage = 1;
         let totalPages = 0;
+        let totalInternalPages = 0; // Turn.js içindeki toplam sayfa sayısı
 
         // PDF yükle ve flip-book oluştur
         async function initPortfolio() {
@@ -533,35 +535,52 @@
                 
                 document.getElementById('totalPages').textContent = totalPages;
                 
-                // Tüm sayfaları önce bellekte hazırla
-                const pages = [];
+                const flipbook = document.getElementById('flipbook');
+                
+                // --- DÜZENLEME: İLK SAYFAYI SOLA ALMAK İÇİN GİZLİ SAYFA EKLEME ---
+                
+                // 1. ADIM: "Gizli" 1. Sayfa (Boş div)
+                // Bu sayfa kitabın kapağı gibi davranır ve sağda kalır, ancak görünmez yaptık.
+                const dummyPage = document.createElement('div');
+                dummyPage.className = 'flipbook-page';
+                dummyPage.style.backgroundColor = 'transparent'; 
+                flipbook.appendChild(dummyPage);
+                
+                // 2. ADIM: Gerçek PDF Sayfalarını Ekle
+                // Sayfaları önce bellekte oluşturup sırayla ekliyoruz
                 for (let i = 1; i <= totalPages; i++) {
                     const pageDiv = document.createElement('div');
                     pageDiv.className = 'flipbook-page';
                     const canvas = await renderPDFPage(i);
                     pageDiv.appendChild(canvas);
-                    pages.push(pageDiv);
+                    flipbook.appendChild(pageDiv);
                 }
                 
-                // Tüm sayfalar hazır, şimdi DOM'a ekle
-                const flipbook = document.getElementById('flipbook');
-                pages.forEach(page => flipbook.appendChild(page));
+                // Toplam sayfa sayısı = PDF sayfaları + 1 (gizli sayfa)
+                totalInternalPages = totalPages + 1;
                 
                 // Turn.js başlat
                 $('#flipbook').turn({
-                    width: 1200,
-                    height: 675,
+                    width: 1400,
+                    height: 525, 
                     autoCenter: true,
                     duration: 1000,
                     gradients: true,
                     elevation: 50,
-                    pages: totalPages
-                });
-                
-                // Sayfa değişikliği event
-                $('#flipbook').bind('turned', function(event, page) {
-                    currentPage = page;
-                    updatePageInfo();
+                    pages: totalInternalPages,
+                    page: 2, // KİTAP 2. SAYFADAN (SİZİN 1. PDF SAYFANIZDAN) BAŞLAR
+                    when: {
+                        turning: function(event, page, view) {
+                            // Kullanıcının gizli sayfaya (1. sayfaya) dönmesini engelle
+                            if (page === 1) {
+                                event.preventDefault();
+                            }
+                        },
+                        turned: function(event, page) {
+                            currentPage = page;
+                            updatePageInfo();
+                        }
+                    }
                 });
                 
                 // Buton event'lerini ekle
@@ -571,6 +590,9 @@
                 // Hazır olduğunda göster
                 document.querySelector('.loading-message').style.display = 'none';
                 document.getElementById('flipbook-container').classList.add('ready');
+                
+                // İlk açılış durumu için güncelle
+                currentPage = 2;
                 updatePageInfo();
                 
             } catch (error) {
@@ -583,7 +605,7 @@
         // PDF sayfasını canvas olarak render et
         async function renderPDFPage(pageNum) {
             const page = await pdfDoc.getPage(pageNum);
-            const scale = 2.5;
+            const scale = 2.5; // Kalite için ölçek
             const viewport = page.getViewport({ scale: scale });
             
             const canvas = document.createElement('canvas');
@@ -601,9 +623,16 @@
 
         // Sayfa bilgisini güncelle
         function updatePageInfo() {
-            document.getElementById('currentPage').textContent = currentPage;
-            document.getElementById('prevBtn').disabled = currentPage === 1;
-            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+            // Turn.js sayfa 2 = Bizim sayfa 1
+            // Bu yüzden görsel olarak 1 eksiğini gösteriyoruz
+            let visualPage = currentPage - 1;
+            if (visualPage < 1) visualPage = 1;
+            
+            document.getElementById('currentPage').textContent = visualPage;
+            
+            // Önceki butonunu 2. internal sayfada (görsel olarak 1. sayfada) pasif yap
+            document.getElementById('prevBtn').disabled = currentPage <= 3;
+            document.getElementById('nextBtn').disabled = currentPage >= totalInternalPages;
         }
 
         // Sonraki sayfa
@@ -613,7 +642,10 @@
 
         // Önceki sayfa
         function previousPage() {
-            $('#flipbook').turn('previous');
+            // 2. sayfadan geriye (gizli sayfaya) gitmeyi engelle
+            if (currentPage > 2) {
+                $('#flipbook').turn('previous');
+            }
         }
 
         // PDF indir
