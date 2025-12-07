@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İris Akal Portfolio</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+    
+    <style>
+        /* --- GENERAL STYLES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #fafafa;
+            color: #2a2a2a;
+            line-height: 1.8;
+            letter-spacing: 0.3px;
+        }
+
+        /* --- HEADER & NAV --- */
+        header {
+            background: white;
+            padding: 2rem 4rem;
+            border-bottom: 1px solid #e8e8e8;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        /* Logo görseli için ek ayar */
+        .logo img {
+            height: 50px; /* Logo yüksekliği, ihtiyaca göre değiştirilebilir */
+            width: auto;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links li {
+            position: relative;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 300;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .nav-links a:hover {
+            color: #2a2a2a;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            font-weight: 300;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .dropdown-toggle:hover {
+            color: #2a2a2a;
+        }
+
+        .dropdown-toggle::after {
+            content: '▾';
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-toggle::after {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            min-width: 220px;
+            padding: 1rem 0;
+            margin-top: 1rem;
+            border: 1px solid #e8e8e8;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.8rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu a:hover {
+            background: #fafafa;
+            color: #2a2a2a;
+            padding-left: 2rem;
+        }
+
+        section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 4rem;
+        }
+
+        /* --- INTRO SECTION --- */
+        #intro {
+            margin-top: 100px;
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 6rem;
+            align-items: start;
+            min-height: 70vh;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bbb;
+            font-size: 5rem;
+            position: sticky;
+            top: 150px;
+        }
+
+        .profile-image img {
+            width: 99%;
+            height: 99%;
+            object-fit: cover;
+        }
+
+        .about-content {
+            padding-top: 2rem;
+        }
+
+        .about-content h2 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            color: #2a2a2a;
+        }
+
+        .about-content .title {
+            font-size: 1rem;
+            color: #999;
+            margin-bottom: 3rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        .about-content p {
+            font-size: 1.05rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-weight: 300;
+            line-height: 2;
+        }
+
+        /* --- PORTFOLIO --- */
+        #portfolio {
+            background: transparent;
+            padding: 8rem 4rem;
+            border-top: 1px solid #e8e8e8;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        #portfolio h2 {
+            font-size: 2.5rem;
+            margin-bottom: 4rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-align: center;
+            text-transform: uppercase;
+            color: #2a2a2a;
+        }
+
+        .book-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .book-viewer {
+            width: 100%;
+            height: 850px;
+            background: transparent;
+            position: relative;
+            perspective: 2000px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+        }
+
+        .loading-message {
+            position: absolute;
+            text-align: center;
+            color: #999;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            z-index: 10;
+        }
+
+        .loading-message::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin: 1.5rem auto 0;
+            border: 3px solid #e8e8e8;
+            border-top-color: #2a2a2a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #flipbook-container {
+            display: none;
+            width: 1400px;
+            height: 800px;
+            position: relative;
+        }
+
+        #flipbook-container.ready {
+            display: block;
+        }
+
+        #flipbook {
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 2px 40px rgba(0,0,0,0.15);
+        }
+
+        .flipbook-page {
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flipbook-page canvas {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .page-navigation {
+            position: absolute;
+            bottom: +15rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            background: rgba(255,255,255,0.95);
+            padding: 1rem 2rem;
+            border: 1px solid #e8e8e8;
+        }
+
+        .page-navigation button {
+            background: transparent;
+            border: 1px solid #2a2a2a;
+            color: #2a2a2a;
+            padding: 0.5rem 1.5rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .page-navigation button:hover:not(:disabled) {
+            background: #2a2a2a;
+            color: white;
+        }
+
+        .page-navigation button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            font-size: 0.9rem;
+            color: #666;
+            letter-spacing: 1px;
+        }
+
+        .book-controls {
+            margin-top: -14rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .book-controls button {
+            background: transparent;
+            color: #2a2a2a;
+            border: 1px solid #2a2a2a;
+            padding: 1rem 3rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 300;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .book-controls button:hover {
+            background: #2a2a2a;
+            color: white;
+        }
+
+        /* --- CONTACT --- */
+        #contact {
+            padding: 8rem 4rem;
+        }
+
+        #contact h2 {
+            font-size: 2.5rem;
+            margin-bottom: 4rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-align: center;
+            text-transform: uppercase;
+            color: #2a2a2a;
+        }
+
+        .contact-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            padding-top: 1rem;
+        }
+
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .contact-item strong {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 400;
+        }
+
+        .contact-item span {
+            font-size: 1.1rem;
+            color: #2a2a2a;
+            font-weight: 300;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .social-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .social-links a:hover {
+            color: #2a2a2a;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            padding: 1.2rem;
+            border: 1px solid #e8e8e8;
+            background: white;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+            font-weight: 300;
+            color: #2a2a2a;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: #2a2a2a;
+        }
+
+        .contact-form textarea {
+            resize: vertical;
+            min-height: 180px;
+        }
+
+        .contact-form button {
+            background: #2a2a2a;
+            color: white;
+            border: none;
+            padding: 1.2rem 3rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 300;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .contact-form button:hover {
+            background: #000;
+        }
+
+        footer {
+            background: white;
+            text-align: center;
+            padding: 3rem;
+            border-top: 1px solid #e8e8e8;
+            color: #999;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e8e8e8;
+            margin: 4rem 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">
+                <img src="logo.png" alt="Iris Akal Logo">
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="hakkimda.html">About Me</a></li>
+                <li class="dropdown">
+                    <span class="dropdown-toggle">Projects</span>
+                    <div class="dropdown-menu">
+                        <a href="bizzare-comic-house.html">Bizzare Comic House</a>
+                        <a href="dukta-flexible-wood.html">Dukta Flexible Wood</a>
+                        <a href="2step-clinic.html">2step Clinic</a>
+                        <a href="transfluence.html">Transfluence</a>
+                        <a href="sandpool.html">Sandpool</a>
+                        <a href="bridge.html">Bridge</a>
+                    </div>
+                </li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="intro">
+          <div class="profile-image">
+            <img src="profil.jpg" alt="Profile Photo"> 
+        </div>
+        <div class="about-content">
+            <h2>İRİS AKAL</h2>
+            <p class="title">Interior Architect</p>
+            
+            <p>Born in 2004 in Ankara, I graduated from TED University in Interior Architecture and Environmental Design. A former ballerina and multi-instrumentalist, I bring an artistic lens to spatial design.</p>
+            
+            <p>I'm passionate about interior living design and environmental psychology—exploring how spaces shape our stories and emotions. Through adaptive reuse and sustainable design, I create environments that breathe, connect and invite experience.</p>
+            
+            <p>For me, architecture is memory, connection and the roots that tie people to place. I dream boldly, work passionately and transform ideas into spaces worth remembering.</p>
+        </div>
+    </section>
+
+    <section id="portfolio">
+        <h2>Portfolio</h2>
+        <div class="book-container">
+            <div class="book-viewer">
+                <div class="loading-message">Loading portfolio...</div>
+                <div id="flipbook-container">
+                    <div id="flipbook"></div>
+                    <div class="page-navigation">
+                        <button id="prevBtn">← Previous</button>
+                        <span class="page-info">Page <span id="currentPage">1</span> / <span id="totalPages">-</span></span>
+                        <button id="nextBtn">Next →</button>
+                    </div>
+                </div>
+            </div>
+            <div class="book-controls">
+                <button onclick="downloadPDF()">Download Portfolio</button>
+                <button onclick="openFullscreen()">Fullscreen</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2>Contact</h2>
+        <div class="contact-grid">
+            <div class="contact-info">
+                <div class="contact-item">
+                    <strong>Email</strong>
+                    <span>irisakal@gmail.com</span>
+                </div>
+                <div class="contact-item">
+                    <strong>Phone</strong>
+                    <span>+90 542 695 08 17</span>
+                </div>
+                <div class="contact-item">
+                    <strong>Location</strong>
+                    <span>Ankara, Turkey</span>
+                </div>
+                <div class="divider"></div>
+                <div class="social-links">
+                    <a href="#">Instagram</a>
+                    <a href="#">LinkedIn</a>
+                    <a href="#">Behance</a>
+                </div>
+            </div>
+            <div class="contact-form">
+                <input type="text" id="name" placeholder="Your Name" required>
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="tel" id="phone" placeholder="Phone">
+                <textarea id="message" placeholder="Your Message" required></textarea>
+                <button type="button" onclick="sendMail()">Send</button>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 İRİS AKAL – All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // PDF.js worker configuration
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let pdfDoc = null;
+        let currentPage = 1;
+        let totalPages = 0;
+        let totalInternalPages = 0;
+
+        // Load PDF and create flip-book
+        async function initPortfolio() {
+            try {
+                // Load PDF
+                const loadingTask = pdfjsLib.getDocument('portfolio.pdf');
+                pdfDoc = await loadingTask.promise;
+                totalPages = pdfDoc.numPages;
+                
+                document.getElementById('totalPages').textContent = totalPages;
+                
+                const flipbook = document.getElementById('flipbook');
+                
+                // Hidden first page (empty div)
+                const dummyPage = document.createElement('div');
+                dummyPage.className = 'flipbook-page';
+                dummyPage.style.backgroundColor = 'transparent'; 
+                flipbook.appendChild(dummyPage);
+                
+                // Add real PDF pages
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageDiv = document.createElement('div');
+                    pageDiv.className = 'flipbook-page';
+                    const canvas = await renderPDFPage(i);
+                    pageDiv.appendChild(canvas);
+                    flipbook.appendChild(pageDiv);
+                }
+                
+                totalInternalPages = totalPages + 1;
+                
+                // Initialize Turn.js
+                $('#flipbook').turn({
+                    width: 1400,
+                    height: 525, 
+                    autoCenter: true,
+                    duration: 1000,
+                    gradients: true,
+                    elevation: 50,
+                    pages: totalInternalPages,
+                    page: 2,
+                    when: {
+                        turning: function(event, page, view) {
+                            if (page === 1) {
+                                event.preventDefault();
+                            }
+                        },
+                        turned: function(event, page) {
+                            currentPage = page;
+                            updatePageInfo();
+                        }
+                    }
+                });
+                
+                // Add button events
+                document.getElementById('prevBtn').addEventListener('click', previousPage);
+                document.getElementById('nextBtn').addEventListener('click', nextPage);
+                
+                // Show when ready
+                document.querySelector('.loading-message').style.display = 'none';
+                document.getElementById('flipbook-container').classList.add('ready');
+                
+                currentPage = 2;
+                updatePageInfo();
+                
+            } catch (error) {
+                console.error('PDF loading error:', error);
+                document.querySelector('.loading-message').innerHTML = 
+                    'PDF could not be loaded.<br><br>Please make sure "portfolio.pdf" file<br>is in the same folder as this HTML file.';
+            }
+        }
+
+        // Render PDF page as canvas
+        async function renderPDFPage(pageNum) {
+            const page = await pdfDoc.getPage(pageNum);
+            const scale = 2.5;
+            const viewport = page.getViewport({ scale: scale });
+            
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            
+            await page.render({
+                canvasContext: context,
+                viewport: viewport
+            }).promise;
+            
+            return canvas;
+        }
+
+        // Update page info
+        function updatePageInfo() {
+            let visualPage = currentPage - 1;
+            if (visualPage < 1) visualPage = 1;
+            
+            document.getElementById('currentPage').textContent = visualPage;
+            
+            document.getElementById('prevBtn').disabled = currentPage <= 2;
+            document.getElementById('nextBtn').disabled = currentPage >= totalInternalPages;
+        }
+
+        // Next page
+        function nextPage() {
+            $('#flipbook').turn('next');
+        }
+
+        // Previous page
+        function previousPage() {
+            if (currentPage > 2) {
+                $('#flipbook').turn('previous');
+            }
+        }
+
+        // Download PDF
+        function downloadPDF() {
+            const link = document.createElement('a');
+            link.href = 'portfolio.pdf';
+            link.download = 'portfolio.pdf';
+            link.click();
+        }
+
+        // Fullscreen
+        function openFullscreen() {
+            const viewer = document.querySelector('.book-viewer');
+            if (viewer.requestFullscreen) {
+                viewer.requestFullscreen();
+            } else if (viewer.webkitRequestFullscreen) {
+                viewer.webkitRequestFullscreen();
+            } else if (viewer.msRequestFullscreen) {
+                viewer.msRequestFullscreen();
+            }
+        }
+
+        // Smooth scroll - only for # links on the same page
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href && href !== '#' && href.startsWith('#')) {
+                    const target = document.querySelector(href);
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+        });
+
+        // Initialize PDF on page load
+        window.addEventListener('load', initPortfolio);
+
+        // --- MAIL SENDING FUNCTION ---
+        function sendMail() {
+            var name = document.getElementById("name").value;
+            var email = document.getElementById("email").value;
+            var phone = document.getElementById("phone").value;
+            var message = document.getElementById("message").value;
+
+            if(name === "" || email === "" || message === "") {
+                alert("Please fill in the required fields (Name, Email, Message).");
+                return;
+            }
+
+            var subject = "Portfolio Contact Form: " + name;
+            var body = "Name: " + name + "\n" +
+                       "Email: " + email + "\n" +
+                       "Phone: " + phone + "\n\n" +
+                       "------------------------\n\n" +
+                       "Message:\n" + message;
+
+            var mailtoLink = "mailto:irisakal@gmail.com" +
+                             "?subject=" + encodeURIComponent(subject) +
+                             "&body=" + encodeURIComponent(body);
+
+            window.location.href = mailtoLink;
+        }
+    </script>
+</body>
+</html>

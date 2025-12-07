@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Iris Akal</title>
+    
+    <style>
+        /* --- GENERAL STYLES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #fafafa;
+            color: #2a2a2a;
+            line-height: 1.8;
+            letter-spacing: 0.3px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER & NAV --- */
+        header {
+            background: white;
+            padding: 2rem 4rem;
+            border-bottom: 1px solid #e8e8e8;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #2a2a2a;
+            text-decoration: none;
+        }
+
+         .logo img {
+            height: 50px; /* Logo yüksekliği, ihtiyaca göre değiştirilebilir */
+            width: auto;
+            object-fit: contain;
+        }
+
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links li {
+            position: relative;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 300;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #2a2a2a;
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            font-weight: 300;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .dropdown-toggle:hover {
+            color: #2a2a2a;
+        }
+
+        .dropdown-toggle::after {
+            content: '▾';
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-toggle::after {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            min-width: 220px;
+            padding: 1rem 0;
+            margin-top: 1rem;
+            border: 1px solid #e8e8e8;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.8rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu a:hover {
+            background: #fafafa;
+            color: #2a2a2a;
+            padding-left: 2rem;
+        }
+
+        /* --- MAIN CONTACT SECTION --- */
+        .contact-page-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 140px 4rem 6rem;
+        }
+
+        .contact-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 4rem;
+            text-align: center;
+            color: #2a2a2a;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+        }
+
+        /* Left Side: Info */
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            padding-top: 1rem;
+        }
+
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .contact-item strong {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 400;
+        }
+
+        .contact-item span {
+            font-size: 1.1rem;
+            color: #2a2a2a;
+            font-weight: 300;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e8e8e8;
+            margin: 2rem 0;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .social-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .social-links a:hover {
+            color: #2a2a2a;
+        }
+
+        /* Right Side: Form */
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            padding: 1.2rem;
+            border: 1px solid #e8e8e8;
+            background: white;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+            font-weight: 300;
+            color: #2a2a2a;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: #2a2a2a;
+        }
+
+        .contact-form textarea {
+            resize: vertical;
+            min-height: 180px;
+        }
+
+        .contact-form button {
+            background: #2a2a2a;
+            color: white;
+            border: none;
+            padding: 1.2rem 3rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 300;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            align-self: flex-start;
+        }
+
+        .contact-form button:hover {
+            background: #000;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background: white;
+            text-align: center;
+            padding: 3rem;
+            border-top: 1px solid #e8e8e8;
+            color: #999;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            font-weight: 300;
+            margin-top: auto;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 968px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 4rem;
+            }
+
+            header {
+                padding: 1.5rem 2rem;
+            }
+            
+            section {
+                padding: 4rem 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+             <a href="index.html" class="logo">
+                <img src="logo.png" alt="Iris Akal Logo">
+            </a>
+ <ul class="nav-links">
+                <li><a href="hakkimda.html">About Me</a></li>
+                <li class="dropdown">
+                    <span class="dropdown-toggle">Projects</span>
+                    <div class="dropdown-menu">
+                        <a href="bizzare-comic-house.html">Bizzare Comic House</a>
+                        <a href="dukta-flexible-wood.html">Dukta Flexible Wood</a>
+                        <a href="2step-clinic.html">2step Clinic</a>
+                        <a href="transfluence.html">Transfluence</a>
+                        <a href="sandpool.html">Sandpool</a>
+                        <a href="bridge.html">Bridge</a>
+                    </div>
+                </li>
+                <li><a href="contact.html" class="active">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="contact-page-wrapper">
+        <div class="contact-container">
+            <h1 class="page-title">Get In Touch</h1>
+            
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <strong>Email</strong>
+                        <span>irisakal@gmail.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <strong>Phone</strong>
+                        <span>+90 542 695 08 17</span>
+                    </div>
+                    <div class="contact-item">
+                        <strong>Location</strong>
+                        <span>Ankara, Turkey</span>
+                    </div>
+                    
+                    <div class="divider"></div>
+                    
+                    <div class="social-links">
+                        <a href="#">Instagram</a>
+                        <a href="#">LinkedIn</a>
+                        <a href="#">Behance</a>
+                    </div>
+                </div>
+
+                <div class="contact-form">
+                    <input type="text" id="name" placeholder="Your Name" required>
+                    <input type="email" id="email" placeholder="Email Address" required>
+                    <input type="tel" id="phone" placeholder="Phone Number">
+                    <textarea id="message" placeholder="How can we collaborate?" required></textarea>
+                    
+                    <button type="button" onclick="sendMail()">Send Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 IRIS AKAL – All Rights Reserved</p>
+    </footer>
+
+    <script>
+        function sendMail() {
+            // Form verilerini al
+            var name = document.getElementById("name").value;
+            var email = document.getElementById("email").value;
+            var phone = document.getElementById("phone").value;
+            var message = document.getElementById("message").value;
+
+            // Basit doğrulama: İsim, Email veya Mesaj boşsa uyar
+            if(name === "" || email === "" || message === "") {
+                alert("Please fill in the required fields (Name, Email, Message).");
+                return;
+            }
+
+            // Mail Konusu ve İçeriğini Oluştur
+            var subject = "Contact Form: " + name;
+            var body = "Name: " + name + "\n" +
+                       "Email: " + email + "\n" +
+                       "Phone: " + phone + "\n\n" +
+                       "------------------------\n\n" +
+                       "Message:\n" + message;
+
+            // Mailto linkini hazırla (Özel karakterleri encodeURIComponent ile düzeltir)
+            var mailtoLink = "mailto:irisakal@gmail.com" +
+                             "?subject=" + encodeURIComponent(subject) +
+                             "&body=" + encodeURIComponent(body);
+
+            // Kullanıcının varsayılan mail uygulamasını aç
+            window.location.href = mailtoLink;
+        }
+    </script>
+</body>
+</html>

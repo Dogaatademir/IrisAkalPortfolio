@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sandpool - Iris Akal</title>
+
+    <style>
+        /* --- CSS (Diğer sayfalarla uyumlu standart stil) --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #fafafa;
+            color: #2a2a2a;
+            line-height: 1.8;
+            letter-spacing: 0.3px;
+        }
+
+        /* --- HEADER & NAV --- */
+        header {
+            background: white;
+            padding: 2rem 4rem;
+            border-bottom: 1px solid #e8e8e8;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #2a2a2a;
+            text-decoration: none;
+        }
+
+         .logo img {
+            height: 50px; /* Logo yüksekliği, ihtiyaca göre değiştirilebilir */
+            width: auto;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links li {
+            position: relative;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 300;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #2a2a2a;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2a2a2a;
+            font-weight: 300;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .dropdown-toggle::after {
+            content: '▾';
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-toggle::after {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            min-width: 220px;
+            padding: 1rem 0;
+            margin-top: 1rem;
+            border: 1px solid #e8e8e8;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.8rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu a:hover {
+            background: #fafafa;
+            color: #2a2a2a;
+            padding-left: 2rem;
+        }
+
+        /* --- PROJECT SECTION --- */
+        .project-section {
+            max-width: 1400px;
+            margin: 120px auto 0;
+            padding: 4rem;
+        }
+
+        .project-title {
+            font-size: 3rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 4rem;
+            text-align: center;
+            color: #2a2a2a;
+        }
+
+        .project-content {
+            display: block;
+            margin-bottom: 6rem;
+        }
+
+        /* Çift Paftalı Grid Yapısı */
+        .pafta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .pdf-container {
+            width: 100%;
+        }
+
+        .pdf-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: #2a2a2a;
+        }
+
+        .project-description {
+            background: white;
+            padding: 3rem;
+            border: 1px solid #e8e8e8;
+        }
+
+        .project-description h3 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            margin-bottom: 2rem;
+            color: #2a2a2a;
+        }
+
+        .project-description p {
+            font-size: 1.05rem;
+            color: #666;
+            font-weight: 300;
+            line-height: 2;
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- GALLERY SECTION --- */
+        .gallery-section {
+            margin-top: 4rem;
+        }
+
+        .gallery-section h3 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+            text-align: center;
+            color: #2a2a2a;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .gallery-item {
+            width: 100%;
+            height: 500px;
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 3rem;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background: white;
+            text-align: center;
+            padding: 3rem;
+            margin-top: 6rem;
+            border-top: 1px solid #e8e8e8;
+            color: #999;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 968px) {
+            .pafta-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+             <a href="index.html" class="logo">
+                <img src="logo.png" alt="Iris Akal Logo">
+            </a>
+            <ul class="nav-links">
+                <li><a href="hakkimda.html">About Me</a></li>
+                <li class="dropdown">
+                    <span class="dropdown-toggle">Projects</span>
+                    <div class="dropdown-menu">
+                        <a href="bizzare-comic-house.html">Bizzare Comic House</a>
+                        <a href="dukta-flexible-wood.html">Dukta Flexible Wood</a>
+                        <a href="2step-clinic.html">2step Clinic</a>
+                        <a href="transfluence.html">Transfluence</a>
+                        <a href="sandpool.html" class="active">Sandpool</a>
+                        <a href="bridge.html">Bridge</a>
+                    </div>
+                </li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="project-section">
+        <h1 class="project-title">Sandpool</h1>
+
+        <div class="project-content">
+            <div class="pafta-grid">
+                <div class="pdf-container">
+                    <img src="sandpoolpafta1.jpg" alt="Sandpool Pafta 1" class="pdf-image">
+                </div>
+                <div class="pdf-container">
+                    <img src="sandpoolpafta2.jpg" alt="Sandpool Pafta 2" class="pdf-image">
+                </div>
+            </div>
+
+            <div class="project-description">
+                <h3>About The Project</h3>
+                <p>Sandpool is an innovative outdoor structure that combines the stability of an earth-supported foundation with the flexibility of modular construction. The concept uses compacted sand as a natural load-bearing base, minimizing concrete use while allowing the pool to be installed, removed, or reshaped without permanent ground intervention.</p>
+                
+                <p>Lightweight framing and prefabricated panels create a safe, durable enclosure, while the sand layer provides both structural support and a soft, comfortable ground connection. The system promotes a sustainable and reversible approach to recreation spaces — making construction faster, cleaner, and more adaptable to different landscapes.</p>
+            </div>
+        </div>
+
+     
+    </section>
+
+    <footer>
+        <p>© 2025 IRIS AKAL — All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('#') && href.length > 1) {
+                    const target = document.querySelector(href);
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
